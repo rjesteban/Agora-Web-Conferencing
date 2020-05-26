@@ -3,6 +3,8 @@ import AgoraRTC from 'agora-rtc-sdk';
 import { roomStore, RoomStore } from '../stores/room';
 import { isEmpty } from 'lodash';
 
+declare function require(moduleName: string): any;
+
 // TODO: upload log file
 // TODO: 建议开启上传日志
 AgoraRTC.Logger.enableLogUpload()
@@ -47,6 +49,7 @@ const clientEvents: string[] = [
 
 export const APP_ID = process.env.REACT_APP_AGORA_APP_ID as string;
 export const APP_TOKEN = process.env.REACT_APP_AGORA_APP_TOKEN as string;
+export const APP_CERT = process.env.REACT_APP_AGORA_APP_CERT as string;
 export const ENABLE_LOG = process.env.REACT_APP_AGORA_LOG as string === "true";
 // TODO: default screen sharing uid, please do not directly use it.
 export const SHARE_ID = 7;
@@ -356,6 +359,17 @@ export default class AgoraWebClient {
     }
   }
 
+  /**
+   * For POC purposes only
+   */
+  getRTCToken(uid: number, channel:string): string {
+    const {RtcTokenBuilder, RtmTokenBuilder, RtcRole, RtmRole} = require('agora-access-token');
+    const role = RtcRole.PUBLISHER;
+    const expirationTimeInSeconds = 3600
+    const currentTimestamp = Math.floor(Date.now() / 1000)
+    const privilegeExpiredTs = currentTimestamp + expirationTimeInSeconds
+    return RtcTokenBuilder.buildTokenWithUid(APP_ID, APP_CERT, channel, uid, role, privilegeExpiredTs);
+  }
 
   async joinChannel({
     uid, channel, dual, token
@@ -368,7 +382,7 @@ export default class AgoraWebClient {
     this.localUid = uid;
     this.channel = channel;
     await this.rtc.createClient(APP_ID, true);
-    await this.rtc.join(this.localUid, channel, token);
+    await this.rtc.join(this.localUid, channel, this.getRTCToken(this.localUid, channel));
     dual && await this.rtc.enableDualStream();
     this.joined = true;
     roomStore.setRTCJoined(true);

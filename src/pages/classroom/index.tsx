@@ -291,7 +291,7 @@ export function RoomPage({ children }: any) {
         webClient
           .joinChannel({
             uid: +roomState.me.uid, 
-            channel: roomState.course.rid,
+            channel: 'poc', // harcoded for POC
             token: '',
             dual: false
           }).then(() => {

@@ -29,9 +29,7 @@ export default function (props: any) {
   return (
     <>
       <InputLabel>{props.Label}</InputLabel>
-      <Input className={classes.formInput} value={props.value}
-        onChange={onChange}>
-      </Input>
+      <Input className={classes.formInput} value={props.value} onChange={onChange}></Input>
       {props.requiredText ? <Typography className={classes.required}>{props.requiredText}</Typography> : null}
     </>
   );

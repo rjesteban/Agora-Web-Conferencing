@@ -3,7 +3,10 @@ import EventEmitter from 'events';
 import * as _ from 'lodash';
 import { resolveMessage, jsonParse } from './helper';
 
+declare function require(moduleName: string): any;
+
 export const APP_ID = process.env.REACT_APP_AGORA_APP_ID as string;
+export const APP_CERT = process.env.REACT_APP_AGORA_APP_CERT as string;
 const ENABLE_LOG = process.env.REACT_APP_AGORA_LOG === 'true';
 const logFilter = ENABLE_LOG ? AgoraRTM.LOG_FILTER_DEBUG : AgoraRTM.LOG_FILTER_OFF;
 
@@ -92,8 +95,21 @@ export default class AgoraRTMClient {
     this._bus.off(evtName, cb);
   }
 
+  /**
+   * For POC purposes only
+   */
+  getRtmToken(uid: string): string {
+    const {RtcTokenBuilder, RtmTokenBuilder, RtcRole, RtmRole} = require('agora-access-token');
+    const expirationTimeInSeconds = 3600;
+    const currentTimestamp = Math.floor(Date.now() / 1000);
+    const privilegeExpiredTs = currentTimestamp + expirationTimeInSeconds;
+    const token = RtmTokenBuilder.buildToken(APP_ID, APP_CERT, uid, RtmRole, privilegeExpiredTs);
+    return token;
+  }
+
   async login (uid: string, token?: string) {
-    await this._client.login({uid, token});
+    const generatedToken = this.getRtmToken(uid);
+    await this._client.login({"uid": uid, "token": generatedToken});
     this._client.on("ConnectionStateChanged", (newState: string, reason: string) => {
       this._bus.emit("ConnectionStateChanged", {newState, reason});
     });
