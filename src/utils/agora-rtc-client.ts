@@ -11,6 +11,7 @@ AgoraRTC.Logger.enableLogUpload()
 
 export interface AgoraStreamSpec {
   streamID: number
+  videoProfileId: string,
   video: boolean
   audio: boolean
   mirror?: boolean
@@ -61,7 +62,7 @@ class AgoraRTCClient {
   public _joined: boolean = false;
   public _published: boolean = false;
   private _internalTimer: NodeJS.Timeout | any;
-  public _client: any = AgoraRTC.createClient({mode: 'live', codec: 'vp8'});
+  public _client: any = AgoraRTC.createClient({mode: 'live', codec: 'h264'});
   public _bus: EventEmitter = new EventEmitter();
   public _localStream: any = null;
   public _streamEvents: string[];
@@ -204,6 +205,12 @@ class AgoraRTCClient {
 
   createLocalStream(data: AgoraStreamSpec): Promise<any> {
     this._localStream = AgoraRTC.createStream({...data, mirror: false});
+    const profile = data.videoProfileId || "720p_2";
+    if (data.video) {
+      this._localStream.setVideoProfile(profile);
+    } else {
+      this._localStream.setScreenProfile(profile);
+    }
     return new Promise((resolve, reject) => {
       this._localStream.init(() => {
         this.streamID = data.streamID;
@@ -338,13 +345,13 @@ export default class AgoraWebClient {
       if (!microphoneList.length) {
         throw 'microphoneList is empty'
       }
-
       const cameraId = cameraList[0].deviceId
       const microphoneId = microphoneList[0].deviceId
       await client.initClient(APP_ID)
       const params = {
         streamID: 0,
         audio: true,
+        videoProfileId: "720p_2",
         video: true,
         screen: false,
         microphoneId,
@@ -362,13 +369,13 @@ export default class AgoraWebClient {
   /**
    * For POC purposes only
    */
-  getRTCToken(uid: number, channel:string): string {
+  getRTCToken(uid?: number): string {
     const {RtcTokenBuilder, RtmTokenBuilder, RtcRole, RtmRole} = require('agora-access-token');
     const role = RtcRole.PUBLISHER;
     const expirationTimeInSeconds = 3600
     const currentTimestamp = Math.floor(Date.now() / 1000)
     const privilegeExpiredTs = currentTimestamp + expirationTimeInSeconds
-    return RtcTokenBuilder.buildTokenWithUid(APP_ID, APP_CERT, channel, uid, role, privilegeExpiredTs);
+    return RtcTokenBuilder.buildTokenWithUid(APP_ID, APP_CERT, this.channel, uid || this.localUid, role, privilegeExpiredTs);
   }
 
   async joinChannel({
@@ -382,7 +389,7 @@ export default class AgoraWebClient {
     this.localUid = uid;
     this.channel = channel;
     await this.rtc.createClient(APP_ID, true);
-    await this.rtc.join(this.localUid, channel, this.getRTCToken(this.localUid, channel));
+    await this.rtc.join(this.localUid, channel, this.getRTCToken());
     dual && await this.rtc.enableDualStream();
     this.joined = true;
     roomStore.setRTCJoined(true);
@@ -440,6 +447,7 @@ export default class AgoraWebClient {
     this.shareClient = new AgoraRTCClient();
     await this.shareClient.createLocalStream({
       video: false,
+      videoProfile: "720p_2",
       audio: false,
       screen: true,
       screenAudio: true,

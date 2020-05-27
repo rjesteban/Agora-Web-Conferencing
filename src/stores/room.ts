@@ -105,6 +105,8 @@ type RtcState = {
 
 export type MediaDeviceState = {
   microphoneId: string
+  videoProfileId: string
+  videoProfile: number
   speakerId: string
   cameraId: string
   speakerVolume: number

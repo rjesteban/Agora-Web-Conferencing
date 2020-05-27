@@ -81,16 +81,16 @@ const MediaBoard: React.FC<MediaBoardProps> = ({
         if (platform === 'web') {
             const webClient = rtcClient as AgoraWebClient;
             // WARN: IF YOU ENABLED APP CERTIFICATE, PLEASE SIGN YOUR TOKEN IN YOUR SERVER SIDE AND OBTAIN IT FROM YOUR OWN TRUSTED SERVER API
-            const screenShareToken = '';
+            const screenShareToken = webClient.getRTCToken(SHARE_ID);
             webClient.startScreenShare(screenShareToken).then(() => {
                 webClient.shareClient.on('onTokenPrivilegeWillExpire', (evt: any) => {
                     // WARN: IF YOU ENABLED APP CERTIFICATE, PLEASE SIGN YOUR TOKEN IN YOUR SERVER SIDE AND OBTAIN IT FROM YOUR OWN TRUSTED SERVER API
-                    const newToken = '';
+                    const newToken = webClient.getRTCToken(SHARE_ID);
                     webClient.shareClient.renewToken(newToken);
                 });
                 webClient.shareClient.on('onTokenPrivilegeDidExpire', (evt: any) => {
                     // WARN: IF YOU ENABLED APP CERTIFICATE, PLEASE SIGN YOUR TOKEN IN YOUR SERVER SIDE AND OBTAIN IT FROM YOUR OWN TRUSTED SERVER API
-                    const newToken = '';
+                    const newToken = webClient.getRTCToken(SHARE_ID);
                     webClient.shareClient.renewToken(newToken);
                 });
                 webClient.shareClient.on('stopScreenSharing', (evt: any) => {
@@ -109,6 +109,7 @@ const MediaBoard: React.FC<MediaBoardProps> = ({
                 const _stream = new AgoraStream(localShareStream, localShareStream.getId(), true);
                 roomStore.addLocalSharedStream(_stream);
             }).catch((err: any) => {
+
                 roomStore.setScreenShare(false);
                 if (err.type === 'error' && err.msg === 'NotAllowedError') {
                     globalStore.showToast({

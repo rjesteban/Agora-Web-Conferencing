@@ -58,7 +58,7 @@ body {
   display: flex;
   max-width: 700px;
   max-height: 500px;
-  min-width: 700px;
+  min-width: 150px;
   min-height: 500px;
   box-sizing: content-box;
   .card-menu {
@@ -210,7 +210,7 @@ body {
   position: relative;
   justify-content: space-between;
   height: 350px;
-  margin: 0 55px;
+  margin: 0 50%;
   max-width: 240px;
   padding: 0 5px;
   box-sizing: content-box;

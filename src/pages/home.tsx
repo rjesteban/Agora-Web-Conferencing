@@ -32,7 +32,7 @@ type SessionInfo = {
 }
 
 const defaultState: SessionInfo = {
-  roomName: '',
+  roomName: 'poc',
   roomType: 1,
   role: '',
   yourName: '',
@@ -153,19 +153,6 @@ function HomePage() {
       </div>
       }
       <div className="custom-card">
-        <div className="flex-item cover">
-          {isElectron ? 
-          <>
-          <div className={`short-title ${globalStore.state.language}`}>
-            <span className="title">{t('home.short_title.title')}</span>
-            <span className="subtitle">{t('home.short_title.subtitle')}</span>
-          </div>
-          <div className={`cover-placeholder ${t('home.cover_class')}`}></div>
-          <div className='build-version'>{t("build_version")}</div>
-          </>
-          : <div className={`cover-placeholder-web ${t('home.cover_class')}`}></div>
-          }
-        </div>
         <div className="flex-item card">
           <div className="position-top card-menu">
             <HomeBtn handleSetting={handleSetting}/>

@@ -27,12 +27,15 @@ export default function (props: SettingProps) {
   const {SettingBtn} = usePlatform();
   const {
     cameraList,
+    videoProfileList,
     microphoneList,
     speakerList,
+    videoProfile,
     camera,
     microphone,
     speaker,
     setCamera,
+    setVideoProfile,
     setMicrophone,
     setSpeaker,
     volume,
@@ -63,6 +66,12 @@ export default function (props: SettingProps) {
     setSpeakerVolume(volume);
   }
 
+  const changeVideoProfile = (evt: any) => {
+    let newVideoProfile = evt.target.value;
+    console.log('changeVideo ', newVideoProfile);
+    setVideoProfile(newVideoProfile);
+  }
+
   return (
     <div className={props.className ? props.className : "flex-container"}>
       <div className="custom-card">
@@ -83,6 +92,14 @@ export default function (props: SettingProps) {
                 value={camera}
                 onChange={changeCamera}
                 items={cameraList}
+              />
+            </FormControl>
+            <FormControl className={classes.formControl}>
+              <FormSelect 
+                Label={t("device.resolution")}
+                value={videoProfile}
+                onChange={changeVideoProfile}
+                items={videoProfileList}
               />
             </FormControl>
             <FormControl className={classes.formControl}>
@@ -109,6 +126,7 @@ export default function (props: SettingProps) {
                 camera,
                 microphone,
                 speaker,
+                videoProfile
               })
               props.handleFinish(evt);
             }}/>

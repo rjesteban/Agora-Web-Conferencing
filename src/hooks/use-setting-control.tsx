@@ -11,6 +11,21 @@ export default function useSettingControl () {
 
   const [devices, setDevices] = useState<any[]>([]);
 
+  const videoProfileList = [
+    {
+      text: "480p_2",
+      value: "480p_2"
+    },
+    {
+      text: "720p_1",
+      value: "720p_1"
+    },
+    {
+      text: "720p_2",
+      value: "720p_2"
+    }
+  ];
+
   const {platform} = usePlatform();
 
   const cameraList = useMemo(() => {
@@ -42,6 +57,7 @@ export default function useSettingControl () {
   const [speaker, setSpeaker] = useState(mediaDevice.speaker);
   const [speakerVolume, setSpeakerVolume] = useState<number>(mediaDevice.speakerVolume);
   const [volume, setVolume] = useState<number>(0);
+  const [videoProfile, setVideoProfile] = useState<number>(0);
 
   let mounted = false;
 
@@ -120,6 +136,10 @@ export default function useSettingControl () {
     return speakerList[speaker] ? speakerList[speaker].value : '';
   }, [speakerList, speaker]);
 
+  const videoProfileId: string = useMemo(() => {
+    return videoProfileList[videoProfile] ? videoProfileList[videoProfile].value : '';
+  }, [videoProfileList, videoProfile]);
+
   const [stream, setStream] = useState<any>(null);
 
   const ref = useRef<boolean>(false);
@@ -142,6 +162,7 @@ export default function useSettingControl () {
     const rtcClient: AgoraWebClient | AgoraElectronClient = roomStore.rtcClient;
     lock.current = true;
     if (platform === 'web') {
+      console.log("creating preview stream")
       const webClient = rtcClient as AgoraWebClient;
       !ref.current &&
       webClient.createPreviewStream({
@@ -221,12 +242,15 @@ export default function useSettingControl () {
     return (<VoiceVolume volume={volume}/>)
   }, [volume]);
 
-  const handleSave = (args: {camera: number, microphone: number, speaker: number, speakerVolume: number}) => {
+  const handleSave = (args: {camera: number, microphone: number, speaker: number, speakerVolume: number, videoProfile: number}) => {
     const { camera, microphone, speaker, speakerVolume } = args;
     const cameraId = cameraList[camera] ? cameraList[camera].value : '';
     const microphoneId = microphoneList[microphone] ? microphoneList[microphone].value : '';
     const speakerId = speakerList[speaker] ? speakerList[speaker].value : '';
+    const videoProfileId = videoProfileList[videoProfile] ? videoProfileList[videoProfile].value : '';
     const mediaInfo: MediaDeviceState = {
+      videoProfileId,
+      videoProfile,
       cameraId,
       microphoneId,
       speakerId,
@@ -245,6 +269,9 @@ export default function useSettingControl () {
   return {
     volume,
     cameraList,
+    videoProfileList,
+    videoProfile,
+    setVideoProfile,
     microphoneList,
     speakerList,
     camera,

@@ -51,6 +51,7 @@ const en = {
     'send': 'send'
   },
   'device': {
+    'resolution': 'Resolution',
     'camera': 'Camera',
     'microphone': 'Microphone',
     'speaker': 'Speaker',
@@ -66,14 +67,14 @@ const en = {
   'home': {
     'entry-home': 'Enter in Home',
     'teacher': 'Admin',
-    'student': 'Attendee',
+    'student': 'Panelist',
     'cover_class': 'cover-en',
     'room_name': 'Room Name',
     'nickname': 'Your Name',
     'room_type': 'Room Type',
     'room_join': 'Join',
     'short_title': {
-      'title': 'Agora Video Conferencing',
+      'title': 'AGM Video Conferencing',
       'subtitle': 'Powered by agora.io',
     },
     'name_too_long': 'name too long, should <= 20 characters',
@@ -89,7 +90,7 @@ const en = {
   },
   'room': {
     'chat_room': 'Chat Room',
-    'student_list': 'Attendee List',
+    'student_list': 'Panelists',
     'uploading': 'Uploading...',
     'converting': 'Converting...',
     'upload_success': 'upload success',

@@ -163,6 +163,7 @@ export function RoomPage({ children }: any) {
       const uid = +roomStore.state.me.uid as number;
       const streamSpec: AgoraStreamSpec = {
         streamID: uid,
+        videoProfileId: mediaDevice.videoProfileId,
         video: true,
         audio: true,
         mirror: false,
